@@ -99,8 +99,7 @@ class Detector(object):
         if self.pre_images is None:
           print('Initialize tracking!')
           self.pre_images = images
-          self.tracker.init_track(
-            meta['pre_dets'] if 'pre_dets' in meta else [])
+          self.tracker.init_track(meta['pre_dets'] if 'pre_dets' in meta else [])
         if self.opt.pre_hm:
           # render input heatmap from tracker status
           # pre_inds is not used in the current version.

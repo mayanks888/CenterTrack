@@ -54,9 +54,8 @@ class BDD(GenericDataset):
     # load annotations
     data_dir = os.path.join(opt.data_dir, 'BDD')
     img_dir = os.path.join(data_dir, 'images')
-    if opt.trainval:
-      split = 'test'
-      ann_path = os.path.join(
+    if split=="val":
+       ann_path = os.path.join(
           data_dir, 'annotations',
           'val.json').format(split)
     else:
@@ -64,6 +63,12 @@ class BDD(GenericDataset):
             data_dir, 'annotations',
             'train.json').format(split)
 
+    if opt.trainval:
+      split = 'test'
+      ann_path = os.path.join(
+          data_dir, 'annotations',
+          'val.json').format(split)
+    
     self.images = None
     # load image list and coco
     super(BDD, self).__init__(opt, split, ann_path, img_dir)

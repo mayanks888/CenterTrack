@@ -165,7 +165,7 @@ class Trainer(object):
         epoch, iter_id, num_iters, phase=phase,
         total=bar.elapsed_td, eta=bar.eta_td)
       for l in avg_loss_stats:
-        print( loss_stats[l].mean().item())
+        # print( loss_stats[l].mean().item())
         avg_loss_stats[l].update( loss_stats[l].mean().item(), batch['image'].size(0))
         Bar.suffix = Bar.suffix + '|{} {:.4f} '.format(l, avg_loss_stats[l].avg)
       Bar.suffix = Bar.suffix + '|Data {dt.val:.3f}s({dt.avg:.3f}s) ' \

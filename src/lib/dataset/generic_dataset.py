@@ -82,7 +82,8 @@ class GenericDataset(data.Dataset):
     s = max(img.shape[0], img.shape[1]) * 1.0 if not self.opt.not_max_crop \
       else np.array([img.shape[1], img.shape[0]], np.float32)
     aug_s, rot, flipped = 1, 0, 0
-    if self.split == 'train':
+    # if self.split == 'train':
+    if self.split == 'train' or self.split == 'val' :
       c, aug_s, rot = self._get_aug_param(c, s, width, height)
       s = s * aug_s
       if np.random.random() < opt.flip:

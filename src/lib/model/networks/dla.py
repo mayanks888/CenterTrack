@@ -13,7 +13,8 @@ from torch import nn
 import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
 
-from .base_model import BaseModel
+# from .base_model import BaseModel
+from .base_model_multitask import BaseModel
 
 try:
     from .DCNv2.dcn_v2 import DCN
@@ -593,8 +594,7 @@ DLA_NODE = {
 
 class DLASeg(BaseModel):
     def __init__(self, num_layers, heads, head_convs, opt):
-        super(DLASeg, self).__init__(
-            heads, head_convs, 1, 64 if num_layers == 34 else 128, opt=opt)
+        super(DLASeg, self).__init__(heads, head_convs, 1, 64 if num_layers == 34 else 128, opt=opt)
         down_ratio=4
         self.opt = opt
         self.node_type = DLA_NODE[opt.dla_node]

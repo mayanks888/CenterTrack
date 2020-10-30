@@ -104,8 +104,9 @@ def main(opt):
       save_model(os.path.join(opt.save_dir, 'model_last.pth'), 
                  epoch, model, optimizer)
     logger.write('\n')
-    if epoch in opt.save_point:
-      save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(epoch)), 
+    # if epoch in opt.save_point:
+    if epoch % opt.save_point[0] == 0:
+      save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(epoch)),
                  epoch, model, optimizer)
     if epoch in opt.lr_step:
       lr = opt.lr * (0.1 ** (opt.lr_step.index(epoch) + 1))

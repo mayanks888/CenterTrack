@@ -17,6 +17,7 @@ from .datasets.crowdhuman import CrowdHuman
 from .datasets.kitti_tracking import KITTITracking
 from .datasets.custom_dataset import CustomDataset
 from .datasets.BDD import BDD
+from .datasets.BDD_tl import BDD_tl
 
 dataset_factory = {
   'custom': CustomDataset,
@@ -28,6 +29,7 @@ dataset_factory = {
   'crowdhuman': CrowdHuman,
   'kitti_tracking': KITTITracking,
   'BDD': BDD,
+  'BDD_tl': BDD_tl,
 }
 
 

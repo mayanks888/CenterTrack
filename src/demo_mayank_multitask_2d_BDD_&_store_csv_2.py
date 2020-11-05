@@ -12,7 +12,7 @@ import copy
 import numpy as np
 from src.lib.opts_mayank_mutlitask import opts
 from src.lib.detector_multitask import Detector
-score_thres=0.001
+score_thres=0.0005
 saving_path='/home/mayank_s/Desktop/centertrack/demo'
 image_ext = ['jpg', 'jpeg', 'png', 'webp']
 video_ext = ['mp4', 'mov', 'avi', 'mkv']
@@ -23,7 +23,7 @@ import pandas as pd
 
 class_name = ["person", "rider", "car", "bus", "truck", "bike", "motor", "traffic light", "traffic sign", "train"]
 
-show = False
+show = True
 
 bblabel = []
 
@@ -130,7 +130,7 @@ def demo(opt):
   print("cool")
   columns = ['filename', 'width', 'height', 'class', 'xmin', 'ymin', 'xmax', 'ymax', 'score']
   df = pd.DataFrame(bblabel, columns=columns)
-  df.to_csv('centertrack_bdd_prediction_val.csv', index=False)
+  # df.to_csv('centertrack_bdd_prediction_val.csv', index=False)
 
 if __name__ == '__main__':
   opt = opts().init()

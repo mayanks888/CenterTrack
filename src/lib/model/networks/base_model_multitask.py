@@ -33,7 +33,8 @@ class BaseModel(nn.Module):
                   conv2=nn.Conv2d(head_conv[0], 128, kernel_size=3, padding=1, bias=True)
                   conv2_bn = nn.BatchNorm2d(128)
                   conv3=nn.Conv2d(128, head_conv[0], kernel_size=3, padding=1, bias=True)
-                  convs = [conv,conv_bn,conv2,conv2_bn,conv3]
+                  conv3_bn = nn.BatchNorm2d(128)
+                  convs = [conv,conv_bn,conv2,conv2_bn,conv3,conv3_bn]
                   for k in range(1, len(head_conv)):
                       convs.append(nn.Conv2d(head_conv[k - 1], head_conv[k],
                                    kernel_size=1, bias=True))
@@ -58,7 +59,7 @@ class BaseModel(nn.Module):
                     fc = nn.Sequential(
                         convs[0], convs[1],nn.ReLU(inplace=True),
                         convs[2], convs[3],nn.ReLU(inplace=True),
-                        convs[4], nn.ReLU(inplace=True), out)
+                        convs[4],convs[5], nn.ReLU(inplace=True), out)
                   if 'hm' in head:
                     fc[-1].bias.data.fill_(opt.prior_bias)
                   else:

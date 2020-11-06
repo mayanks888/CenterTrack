@@ -13,8 +13,9 @@ from ..generic_dataset import GenericDataset
 
 class BDD_tl(GenericDataset):
   default_resolution = [512, 512]
-  num_categories = 10
-  class_name = ["person", "rider", "car", "bus", "truck", "bike", "motor", "traffic light", "traffic sign", "train"]
+  num_categories = 1
+  # class_name = ["person", "rider", "car", "bus", "truck", "bike", "motor", "traffic light", "traffic sign", "train"]
+  class_name = ["traffic light"]
 
   # class_name = [
   #   'person', 'bicycle', 'car', 'motorcycle', 'airplane',
@@ -52,7 +53,7 @@ class BDD_tl(GenericDataset):
   max_objs = 128
   def __init__(self, opt, split):
     # load annotations
-    data_dir = os.path.join(opt.data_dir, 'BDD')
+    data_dir = os.path.join(opt.data_dir, 'BDD_tl')
     img_dir = os.path.join(data_dir, 'images')
     if split=="val":
        ann_path = os.path.join(

@@ -12,7 +12,7 @@ import copy
 import numpy as np
 from src.lib.opts_mayank_mutlitask import opts
 from src.lib.detector_multitask import Detector
-score_thres=0.0005
+score_thres=0.1
 saving_path='/home/mayank_s/Desktop/centertrack/demo'
 image_ext = ['jpg', 'jpeg', 'png', 'webp']
 video_ext = ['mp4', 'mov', 'avi', 'mkv']
@@ -74,6 +74,13 @@ def demo(opt):
       # track or detect the image.
       ret = detector.run(img)
       ############################33333
+      ############################33333
+
+      time_str = 'frame {} |'.format(cnt)
+      for stat in time_stats:
+          time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])
+      print(time_str)
+      ######################################
       resu = ret['results']
       for data in resu:
           # print(resu[data])

@@ -11,7 +11,7 @@ import torch
 import math
 
 from model.model import create_model, load_model
-from model.decode import generic_decode,generic_decode_custom
+from model.decode import generic_decode,generic_decode_custom,generic_decode_custom_tl
 from model.utils import flip_tensor, flip_lr_off, flip_lr
 from utils.image import get_affine_transform, affine_transform
 from utils.image import draw_umich_gaussian, gaussian_radius
@@ -347,7 +347,7 @@ class Detector(object):
       torch.cuda.synchronize()
       forward_time = time.time()
       
-      dets = generic_decode_custom(output, K=self.opt.K, opt=self.opt)
+      dets = generic_decode_custom_tl(output, K=self.opt.K, opt=self.opt)
       torch.cuda.synchronize()
       for k in dets:
         dets[k] = dets[k].detach().cpu().numpy()

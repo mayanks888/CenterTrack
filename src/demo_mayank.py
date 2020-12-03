@@ -46,12 +46,11 @@ def demo(opt):
   out_name = opt.demo[opt.demo.rfind('/') + 1:]
   print('out_name', out_name)
   if opt.save_video:
-    # fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    fourcc = cv2.VideoWriter_fourcc(*'H264')
-    out = cv2.VideoWriter('../results/{}.mp4'.format(
-      opt.exp_id + '_' + out_name),fourcc, opt.save_framerate, (
-        opt.video_w, opt.video_h))
-  
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    # fourcc = cv2.VideoWriter_fourcc(*'H264')
+    out = cv2.VideoWriter('../results/{}.mp4'.format(opt.exp_id + '_' + out_name),fourcc, opt.save_framerate, (opt.video_w, opt.video_h))
+    # out = cv2.VideoWriter('/home/mayank_s/codebase/others/centernet/mayank/CenterTrack/results/{}.mp4'.format(opt.exp_id + '_' + out_name),fourcc, opt.save_framerate, (opt.video_w, opt.video_h))
+
   if opt.debug < 5:
     detector.pause = False
   cnt = 0
@@ -65,6 +64,7 @@ def demo(opt):
       else:
         if cnt < len(image_names):
           img = cv2.imread(image_names[cnt])
+          img = cv2.resize(img, (int(img.shape[1]/2), int(img.shape[0]/2)))
         else:
           save_and_exit(opt, out, results, out_name)
       cnt += 1
@@ -101,11 +101,13 @@ def demo(opt):
       # esc to quit and finish saving video
       if cv2.waitKey(1) == 27:
         save_and_exit(opt, out, results, out_name)
-        return 
+        return
+  # print("mayank")
   save_and_exit(opt, out, results)
 
 
 def save_and_exit(opt, out=None, results=None, out_name=''):
+  opt.save_results=True
   if opt.save_results and (results is not None):
     save_dir =  '../results/{}_results.json'.format(opt.exp_id + '_' + out_name)
     print('saving results to', save_dir)

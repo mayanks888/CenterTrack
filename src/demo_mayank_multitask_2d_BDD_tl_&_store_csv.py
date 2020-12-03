@@ -10,10 +10,11 @@ import cv2
 import json
 import copy
 import numpy as np
+import shutil
 from src.lib.opts_mayank_mutlitask_tl import opts
 from src.lib.detector_multitask_tl import Detector
-score_thres=0.0005
-saving_path='/home/mayank_s/Desktop/centertrack/demo'
+score_thres=0.1
+output_folder='/home/mayank_s/Desktop/centertrack/demo'
 image_ext = ['jpg', 'jpeg', 'png', 'webp']
 video_ext = ['mp4', 'mov', 'avi', 'mkv']
 time_stats = ['tot', 'load', 'pre', 'net', 'dec', 'post', 'merge', 'display']
@@ -67,6 +68,9 @@ def demo(opt):
     detector.pause = False
   cnt = -1
   results = {}
+  if os.path.exists(output_folder):
+      shutil.rmtree(output_folder)  # delete output folder
+  os.makedirs(output_folder)
 
   for img_path in image_names:
       img = cv2.imread(img_path)
@@ -75,6 +79,12 @@ def demo(opt):
       # track or detect the image.
       ret = detector.run(img)
       ############################33333
+
+      time_str = 'frame {} |'.format(cnt)
+      for stat in time_stats:
+        time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])
+      print(time_str)
+      ######################################
       resu = ret['results']
       for data in resu:
           # print(resu[data])
@@ -123,15 +133,16 @@ def demo(opt):
               cv2.destroyAllWindows()
           # cv2.waitKey(1)
           # cv2.destroyAllWindows()
-          # output_path = saving_path + ((image_names[cnt].split("/")[-1])
-          # image_name= (image_names[cnt].split("/")[-1])
-          output_path = os.path.join(saving_path, image_name)
+          # output_path = output_folder + ((image_names[cnt].split("/")[-1])
+          image_name= (image_names[cnt].split("/")[-1])
+          cnt+=1
+          output_path = os.path.join(output_folder, image_name)
           cv2.imwrite(output_path, img)
 
   print("cool")
   columns = ['filename', 'width', 'height', 'class', 'xmin', 'ymin', 'xmax', 'ymax', 'score']
   df = pd.DataFrame(bblabel, columns=columns)
-  # df.to_csv('centertrack_bdd_prediction_val.csv', index=False)
+  df.to_csv('centertrack_bdd_prediction_val.csv', index=False)
 
 if __name__ == '__main__':
   opt = opts().init()

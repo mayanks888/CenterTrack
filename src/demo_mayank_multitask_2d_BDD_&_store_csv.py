@@ -23,7 +23,7 @@ import pandas as pd
 
 class_name = ["person", "rider", "car", "bus", "truck", "bike", "motor", "traffic light", "traffic sign", "train"]
 
-show = False
+show = True
 
 bblabel = []
 
@@ -83,6 +83,13 @@ def demo(opt):
       ret = detector.run(img)
 
       ############################33333
+      ############################33333
+
+      time_str = 'frame {} |'.format(cnt)
+      for stat in time_stats:
+          time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])
+      print(time_str)
+      ######################################
       resu = ret['results']
       for data in resu:
           # print(resu[data])

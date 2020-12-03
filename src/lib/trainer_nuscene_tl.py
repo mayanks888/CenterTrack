@@ -31,6 +31,8 @@ class GenericLoss(torch.nn.Module):
   def _sigmoid_output(self, output):
     if 'hm' in output:
       output['hm'] = _sigmoid(output['hm'])
+    if 'hm_tl' in output:
+      output['hm_tl'] = _sigmoid(output['hm_tl'])
     if 'hm_hp' in output:
       output['hm_hp'] = _sigmoid(output['hm_hp'])
     if 'dep' in output:
@@ -49,10 +51,15 @@ class GenericLoss(torch.nn.Module):
         losses['hm'] += self.crit(
           output['hm'], batch['hm'], batch['ind'], 
           batch['mask'], batch['cat']) / opt.num_stacks
+
+      if 'hm_tl' in output:
+        losses['hm_tl'] += self.crit(
+          output['hm_tl'], batch['hm_tl'], batch['ind_tl'],
+          batch['mask_tl'], batch['cat_tl']) / opt.num_stacks
       
       regression_heads = [
         'reg', 'wh', 'tracking', 'ltrb', 'ltrb_amodal', 'hps', 
-        'dep', 'dim', 'amodel_offset', 'velocity']
+        'dep', 'dim', 'amodel_offset', 'velocity','reg_tl', 'wh_tl']
 
       for head in regression_heads:
         if head in output:
@@ -139,8 +146,10 @@ class Trainer(object):
     bar = Bar('{}/{}'.format(opt.task, opt.exp_id), max=num_iters)
     end = time.time()
     for iter_id, batch in enumerate(data_loader):
+      # print(batch)
       if iter_id >= num_iters:
         break
+      # break
       data_time.update(time.time() - end)
 
       for k in batch:
@@ -183,7 +192,7 @@ class Trainer(object):
   def _get_losses(self, opt):
     loss_order = ['hm', 'wh', 'reg', 'ltrb', 'hps', 'hm_hp', \
       'hp_offset', 'dep', 'dim', 'rot', 'amodel_offset', \
-      'ltrb_amodal', 'tracking', 'nuscenes_att', 'velocity']
+      'ltrb_amodal', 'tracking', 'nuscenes_att', 'velocity','hm_tl', 'wh_tl', 'reg_tl']
     loss_states = ['tot'] + [k for k in loss_order if k in opt.heads]
     loss = GenericLoss(opt)
     return loss_states, loss

@@ -11,10 +11,9 @@ class opts(object):
     self.parser = argparse.ArgumentParser()
     # basic experiment setting
     # self.parser.add_argument('--task', default='tracking', help='ctdet | ddd | multi_pose | tracking or combined with ')
-    self.parser.add_argument('--task', default='tracking,ddd,multitask_tl', help='ctdet | ddd | multi_pose | tracking or combined with ,')
-    self.parser.add_argument('--dataset', default='BDD_tl',
-                             help='see lib/dataset/dataset_facotry for ' + 
-                            'available datasets')
+    # self.parser.add_argument('--task', default='tracking,ddd,multitask_tl', help='ctdet | ddd | multi_pose | tracking or combined with ,')
+    self.parser.add_argument('--task', default='tracking, ddd ,nuscene_tl', help='ctdet | ddd | multi_pose | tracking or combined with ,')
+    self.parser.add_argument('--dataset', default='nuscenes_tl', help='see lib/dataset/dataset_facotry for ' + 'available datasets')
     self.parser.add_argument('--test_dataset', default='',
                              help='coco | kitti | coco_hp | pascal')
     self.parser.add_argument('--exp_id', default='default')
@@ -37,14 +36,14 @@ class opts(object):
     # self.parser.add_argument('--demo', default='/home/mayank_s/datasets/nuscene/v1.0-mini/sweeps/CAM_FRONT', help='path to image/ image folders/ video. or "webcam"')
     # self.parser.add_argument('--demo', default='/home/mayank_s/datasets/nuscene/manipulating_nuscene_from_our_tl_datasets/all_front/nuscene_replace', help='path to image/ image folders/ video. or "webcam"')
     # self.parser.add_argument('--load_model', default='../models/nuScenes_3Dtracking.pth',
-    # self.parser.add_argument('--load_model', default='../models/model_25.pth', help='path to pretrained model')
+    self.parser.add_argument('--load_model', default='../models/model_25.pth', help='path to pretrained model')
     # self.parser.add_argument('--load_model', default='../models/multitask/model_last_83.pth', help='path to pretrained model')
     # self.parser.add_argument('--load_model', default='../models/multitask/mulittask_with_more_layers/model_last_33.pth', help='path to pretrained model')
     # self.parser.add_argument('--load_model', default='../models/multitask/multitask_with_unfreeze_layer/model_last.pth', help='path to pretrained model')
     # self.parser.add_argument('--load_model', default='../models/multitask/mutiltask_with_bdd_tl_freeze/model_last_3.pth', help='path to pretrained model')
     # self.parser.add_argument('--load_model', default='../models/multitask/mutiltask_with_bdd_tl_freeze/mutitask_with_less_cnn_freeze/model_last.pth', help='path to pretrained model')
     # self.parser.add_argument('--load_model', default='../models/multitask/mutiltask_with_bdd_tl_unfreeze/model_last_220.pth', help='path to pretrained model')
-    self.parser.add_argument('--load_model', default='../models/multitask/multitask_with_nuscene_tl_unfreeze/model_last.pth', help='path to pretrained model')
+    # self.parser.add_argument('--load_model', default='../models/multitask/multitask_with_nuscene_tl_unfreeze/model_last.pth', help='path to pretrained model')
     self.parser.add_argument('--resume', action='store_true',
                              help='resume an experiment. '
                                   'Reloaded the optimizer parameter and '
@@ -135,7 +134,7 @@ class opts(object):
                              help='when to save the model to disk.')
     self.parser.add_argument('--num_epochs', type=int, default=70,
                              help='total training epochs.')
-    self.parser.add_argument('--batch_size', type=int, default=2,
+    self.parser.add_argument('--batch_size', type=int, default=3,
                              help='batch size')
     self.parser.add_argument('--master_batch_size', type=int, default=-1,
                              help='batch size on the master gpu.')
@@ -375,6 +374,10 @@ class opts(object):
         opt.heads.update ({'hm_bdd': opt.num_classes, 'reg_bdd': 2, 'wh_bdd': 2})
     if 'multitask_tl' in opt.task:
         opt.heads.update ({'hm_bdd': opt.num_classes, 'reg_bdd': 2, 'wh_bdd': 2})
+        # opt.heads.update ({'hm_bdd': 10, 'reg_bdd': 2, 'wh_bdd': 2})
+        opt.heads.update ({'hm_tl': 1, 'reg_tl': 2, 'wh_tl': 2})
+    if 'nuscene_tl' in opt.task:
+        # opt.heads.update ({'hm_bdd': opt.num_classes, 'reg_bdd': 2, 'wh_bdd': 2})
         # opt.heads.update ({'hm_bdd': 10, 'reg_bdd': 2, 'wh_bdd': 2})
         opt.heads.update ({'hm_tl': 1, 'reg_tl': 2, 'wh_tl': 2})
     if opt.ltrb:

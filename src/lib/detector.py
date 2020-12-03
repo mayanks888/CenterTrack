@@ -336,6 +336,7 @@ class Detector(object):
     with torch.no_grad():
       torch.cuda.synchronize()
       output = self.model(images, pre_images, pre_hms)[-1]
+      # output = self.model(images, pre_images, pre_hms)[-1]
       output = self._sigmoid_output(output)
       output.update({'pre_inds': pre_inds})
       if self.opt.flip_test:

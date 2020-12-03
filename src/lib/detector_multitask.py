@@ -301,6 +301,8 @@ class Detector(object):
       output['hm'] = output['hm'].sigmoid_()
     if 'hm_bdd' in output:
       output['hm_bdd'] = output['hm_bdd'].sigmoid_()
+    if 'hm_tl' in output:
+      output['hm_tl'] = output['hm_tl'].sigmoid_()
     if 'hm_hp' in output:
       output['hm_hp'] = output['hm_hp'].sigmoid_()
     if 'dep' in output:

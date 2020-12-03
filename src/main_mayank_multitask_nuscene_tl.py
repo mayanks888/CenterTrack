@@ -8,14 +8,14 @@ import os
 import torch
 import torch.utils.data
 # from src.lib.opts_mayank_mutlitask_tl import opts
-from src.lib.opts_mayank_mutlitask_tl import opts
+from src.lib.opts_mayank_mutlitask_nuscene_tl import opts
 
 from model.model import create_model, load_model, save_model
 # from src.lib.model.model import create_model, load_model, save_model
 from model.data_parallel import DataParallel
 from logger import Logger
 from dataset.dataset_factory import get_dataset
-from src.lib.trainer_multitask_tl import Trainer
+from src.lib.trainer_nuscene_tl import Trainer
 
 def get_optimizer(opt, model):
   if opt.optim == 'adam':
@@ -48,20 +48,20 @@ def main(opt):
       model, opt.load_model, opt, optimizer)
 
   ############################################3333
-  #freezing backbone and one head
-  for param in model.parameters():
+  ## freezing backbone and one head
+  # for param in model.parameters():
     # print(param)
-    param.requires_grad = False
-
-  # req_grad = ["model.hm_bdd", "model.wh_bdd", "model.reg_bdd"]
-  req_grad = ["model.hm_tl", "model.wh_tl", "model.reg_tl"]
-  # for hd in model.reg_tl:
-  for custom_head in (req_grad):
-    for hd in eval(custom_head):
-      # print(hd.parameters())
-      for wt in hd.parameters():
-        # print(wt)
-        wt.requires_grad = True
+  #   param.requires_grad = False
+  #
+  # # req_grad = ["model.hm_bdd", "model.wh_bdd", "model.reg_bdd"]
+  # req_grad = ["model.hm_tl", "model.wh_tl", "model.reg_tl"]
+  # # for hd in model.reg_tl:
+  # for custom_head in (req_grad):
+  #   for hd in eval(custom_head):
+  #     # print(hd.parameters())
+  #     for wt in hd.parameters():
+  #       # print(wt)
+  #       wt.requires_grad = True
 
   ######################################################
 

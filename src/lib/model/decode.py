@@ -281,3 +281,105 @@ def generic_decode_custom(output, K=100, opt=None):
       [pre_xs.unsqueeze(2), pre_ys.unsqueeze(2)], dim=2)
 
   return ret
+
+
+
+def generic_decode_custom_tl(output, K=100, opt=None):
+  if not ('hm' in output):
+    return {}
+
+  if opt.zero_tracking:
+    output['tracking'] *= 0
+
+  heat = output['hm_tl']
+  batch, cat, height, width = heat.size()
+
+  heat = _nms(heat)
+  scores, inds, clses, ys0, xs0 = _topk(heat, K=K)
+
+  clses = clses.view(batch, K)
+  scores = scores.view(batch, K)
+  bboxes = None
+  cts = torch.cat([xs0.unsqueeze(2), ys0.unsqueeze(2)], dim=2)
+  ret = {'scores': scores, 'clses': clses.float(),
+         'xs': xs0, 'ys': ys0, 'cts': cts}
+  if 'reg_bdd' in output:
+    reg = output['reg_tl']
+    reg = _tranpose_and_gather_feat(reg, inds)
+    reg = reg.view(batch, K, 2)
+    xs = xs0.view(batch, K, 1) + reg[:, :, 0:1]
+    ys = ys0.view(batch, K, 1) + reg[:, :, 1:2]
+  else:
+    xs = xs0.view(batch, K, 1) + 0.5
+    ys = ys0.view(batch, K, 1) + 0.5
+
+  if 'wh_bdd' in output:
+    wh = output['wh_tl']
+    wh = _tranpose_and_gather_feat(wh, inds)  # B x K x (F)
+    # wh = wh.view(batch, K, -1)
+    wh = wh.view(batch, K, 2)
+    wh[wh < 0] = 0
+    if wh.size(2) == 2 * cat:  # cat spec
+      wh = wh.view(batch, K, -1, 2)
+      cats = clses.view(batch, K, 1, 1).expand(batch, K, 1, 2)
+      wh = wh.gather(2, cats.long()).squeeze(2)  # B x K x 2
+    else:
+      pass
+    bboxes = torch.cat([xs - wh[..., 0:1] / 2,
+                        ys - wh[..., 1:2] / 2,
+                        xs + wh[..., 0:1] / 2,
+                        ys + wh[..., 1:2] / 2], dim=2)
+    ret['bboxes'] = bboxes
+    # print('ret bbox', ret['bboxes'])
+  #
+  # if 'ltrb' in output:
+  #   ltrb = output['ltrb']
+  #   ltrb = _tranpose_and_gather_feat(ltrb, inds)  # B x K x 4
+  #   ltrb = ltrb.view(batch, K, 4)
+  #   bboxes = torch.cat([xs0.view(batch, K, 1) + ltrb[..., 0:1],
+  #                       ys0.view(batch, K, 1) + ltrb[..., 1:2],
+  #                       xs0.view(batch, K, 1) + ltrb[..., 2:3],
+  #                       ys0.view(batch, K, 1) + ltrb[..., 3:4]], dim=2)
+  #   ret['bboxes'] = bboxes
+  #
+  # regression_heads = ['tracking', 'dep', 'rot', 'dim', 'amodel_offset',
+  #                     'nuscenes_att', 'velocity']
+  #
+  # for head in regression_heads:
+  #   if head in output:
+  #     ret[head] = _tranpose_and_gather_feat(
+  #       output[head], inds).view(batch, K, -1)
+  #
+  # if 'ltrb_amodal' in output:
+  #   ltrb_amodal = output['ltrb_amodal']
+  #   ltrb_amodal = _tranpose_and_gather_feat(ltrb_amodal, inds)  # B x K x 4
+  #   ltrb_amodal = ltrb_amodal.view(batch, K, 4)
+  #   bboxes_amodal = torch.cat([xs0.view(batch, K, 1) + ltrb_amodal[..., 0:1],
+  #                              ys0.view(batch, K, 1) + ltrb_amodal[..., 1:2],
+  #                              xs0.view(batch, K, 1) + ltrb_amodal[..., 2:3],
+  #                              ys0.view(batch, K, 1) + ltrb_amodal[..., 3:4]], dim=2)
+  #   ret['bboxes_amodal'] = bboxes_amodal
+  #   ret['bboxes'] = bboxes_amodal
+  #
+  # if 'hps' in output:
+  #   kps = output['hps']
+  #   num_joints = kps.shape[1] // 2
+  #   kps = _tranpose_and_gather_feat(kps, inds)
+  #   kps = kps.view(batch, K, num_joints * 2)
+  #   kps[..., ::2] += xs0.view(batch, K, 1).expand(batch, K, num_joints)
+  #   kps[..., 1::2] += ys0.view(batch, K, 1).expand(batch, K, num_joints)
+  #   kps, kps_score = _update_kps_with_hm(
+  #     kps, output, batch, num_joints, K, bboxes, scores)
+  #   ret['hps'] = kps
+  #   ret['kps_score'] = kps_score
+
+  if 'pre_inds' in output and output['pre_inds'] is not None:
+    pre_inds = output['pre_inds']  # B x pre_K
+    pre_K = pre_inds.shape[1]
+    pre_ys = (pre_inds / width).int().float()
+    pre_xs = (pre_inds % width).int().float()
+
+    ret['pre_cts'] = torch.cat(
+      [pre_xs.unsqueeze(2), pre_ys.unsqueeze(2)], dim=2)
+
+  return ret

@@ -13,12 +13,15 @@ from nuscenes.utils.geometry_utils import BoxVisibility, transform_matrix
 from nuScenes_lib.utils_kitti import KittiDB
 from nuscenes.eval.detection.utils import category_to_detection_name
 from pyquaternion import Quaternion
-
+import os
 import _init_paths
 from utils.ddd_utils import compute_box_3d, project_to_image, alpha2rot_y
 from utils.ddd_utils import draw_box_3d, unproject_2d_to_3d
 
-DATA_PATH = '../../data/nuscenes/'
+DATA_PATH = '/home/mayank_s/datasets/nuscene/nuscene/'
+# DATA_PATH = '/home/mayank_s/datasets/nuscene/dummy/RANDOM/v1.0-mini/'
+# DATA_PATH = '/home/mayank_s/datasets/nuscene/'
+
 OUT_PATH = DATA_PATH + 'annotations/'
 SPLITS = {'val': 'v1.0-trainval', 'train': 'v1.0-trainval', 'test': 'v1.0-test'}
 DEBUG = False
@@ -32,9 +35,8 @@ SENSOR_ID = {'RADAR_FRONT': 7, 'RADAR_FRONT_LEFT': 9,
   'CAM_BACK_RIGHT': 3, 'CAM_BACK': 4, 'CAM_BACK_LEFT': 5,
   'CAM_FRONT_LEFT': 6}
 
-USED_SENSOR = ['CAM_FRONT', 'CAM_FRONT_RIGHT', 
-  'CAM_BACK_RIGHT', 'CAM_BACK', 'CAM_BACK_LEFT',
-  'CAM_FRONT_LEFT']
+# USED_SENSOR = ['CAM_FRONT', 'CAM_FRONT_RIGHT', 'CAM_BACK_RIGHT', 'CAM_BACK', 'CAM_BACK_LEFT', 'CAM_FRONT_LEFT']
+USED_SENSOR = ['CAM_FRONT']
 CAT_IDS = {v: i + 1 for i, v in enumerate(CATS)}
 
 def _rot_y2alpha(rot_y, x, cx, fx):
@@ -67,9 +69,11 @@ def main():
   if not os.path.exists(OUT_PATH):
     os.mkdir(OUT_PATH)
   for split in SPLITS:
-    data_path = DATA_PATH + '{}/'.format(SPLITS[split])
-    nusc = NuScenes(
-      version=SPLITS[split], dataroot=data_path, verbose=True)
+    if split=="val":
+        continue
+    # data_path = DATA_PATH + '{}/'.format(SPLITS[split])
+    data_path = DATA_PATH
+    nusc = NuScenes(version=SPLITS[split], dataroot=data_path, verbose=True)
     out_path = OUT_PATH + '{}.json'.format(split)
     categories_info = [{'name': CATS[i], 'id': i + 1} for i in range(len(CATS))]
     ret = {'images': [], 'annotations': [], 'categories': categories_info, 
@@ -81,8 +85,7 @@ def main():
     # A "sample" in nuScenes refers to a timestamp with 6 cameras and 1 LIDAR.
     for sample in nusc.sample:
       scene_name = nusc.get('scene', sample['scene_token'])['name']
-      if not (split in ['mini', 'test']) and \
-        not (scene_name in SCENE_SPLITS[split]):
+      if not (split in ['mini', 'test']) and not (scene_name in SCENE_SPLITS[split]):
         continue
       if sample['prev'] == '':
         print('scene_name', scene_name)
@@ -230,9 +233,10 @@ def main():
               print('loc      ', pt_3d)
             cv2.imshow('img', img)
             cv2.imshow('img_3d', img_3d)
-            cv2.waitKey()
+            cv2.waitKey(1000)
+            cv2.destroyAllWindows()
             nusc.render_sample_data(image_token)
-            plt.show()
+            # plt.show()
     print('reordering images')
     images = ret['images']
     video_sensor_to_images = {}

@@ -1,4 +1,6 @@
 # Tracking Objects as Points
+#Modified centrack to for multitasking nerwork
+
 Simultaneous object detection and tracking using center points:
 ![](readme/fig2.png)
 > [**Tracking Objects as Points**](http://arxiv.org/abs/2004.01177),            

@@ -1,5 +1,5 @@
 # Tracking Objects as Points
-# Modified centerTrack to for multitasking nerwork
+# Modified CenterTrack to for multitasking nerwork
 
 Simultaneous object detection and tracking using center points:
 ![](readme/fig2.png)
